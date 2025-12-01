@@ -44,7 +44,7 @@ source("ui_components/ui_about.R")
 
 # Define UI with bslib (Modern Web App Structure) ----
 ui <- page_navbar(
-  title = tags$span(bs_icon("graph-up-arrow"), " Financial Insight"),
+  # title = tags$span(bs_icon("graph-up-arrow"), " Financial Insight"),
   id = "nav",
   
   # ENTERPRISE LIGHT THEME
