@@ -62,6 +62,7 @@ source("modules/personal_finance/server/server_savings.R")
 source("modules/personal_finance/server/server_loans.R")
 source("modules/personal_finance/server/server_planning_guide.R")
 source("modules/personal_finance/server/server_credit.R")
+source("modules/personal_finance/server/server_personal_data.R")
 
 source("modules/retirement/server/server_simulator.R")
 source("modules/retirement/server/server_scenarios.R")
@@ -103,6 +104,7 @@ function(input, output, session) {
   loans_server(input, output, session)
   planning_guide_server(input, output, session)
   credit_server(input, output, session)
+  personal_data_server(input, output, session)
   
   # Module 3: Retirement Risk Simulator Servers ----
   simulator_server(input, output, session)

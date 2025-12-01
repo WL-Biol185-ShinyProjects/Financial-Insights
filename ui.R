@@ -35,6 +35,7 @@ source("modules/personal_finance/ui/ui_savings.R")
 source("modules/personal_finance/ui/ui_loans.R")
 source("modules/personal_finance/ui/ui_planning_guide.R")
 source("modules/personal_finance/ui/ui_credit.R")
+source("modules/personal_finance/ui/ui_personal_data.R")
 
 source("modules/retirement/ui/ui_simulator.R")
 source("modules/retirement/ui/ui_scenarios.R")
@@ -201,7 +202,8 @@ ui <- page_navbar(
     nav_panel("Savings Projector", value = "pf_savings", icon = bs_icon("piggy-bank"), savings_ui()),
     nav_panel("Loan Calculator", value = "pf_loans", icon = bs_icon("calculator"), loans_ui()),
     nav_panel("Credit Card Predictor", value = "pf_credit", icon = bs_icon("credit-card"), credit_ui()),
-    nav_panel("Financial Guide", value = "pf_guide", icon = bs_icon("journal-text"), planning_guide_ui())
+    nav_panel("Financial Guide", value = "pf_guide", icon = bs_icon("journal-text"), planning_guide_ui()),
+    nav_panel("Personal Finance Data Explorer", value = "pf_personal_data", icon = bs_icon("table"), personal_data_ui())
   ),
 
   # 4. Retirement (Dropdown) ----
