@@ -2,7 +2,7 @@
 # Server Logic: State Employment Data
 # ============================================================================
 
-unemployment_server <- function(input, output, session, macro_data, shared_state) {
+unemployment_server <- function(input, output, session, shared_state) {
   
   # Load Employment Data ----
   employment_data <- reactive({
@@ -22,7 +22,6 @@ unemployment_server <- function(input, output, session, macro_data, shared_state
     
     # Filter out total U.S. row
     df <- df %>% filter(tolower(State) != "total u.s.")
-    View(df)
     
     # Add state codes for plotly
     state_codes <- data.frame(

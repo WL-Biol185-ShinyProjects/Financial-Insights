@@ -92,7 +92,7 @@ function(input, output, session) {
   global_map_server(input, output, session, macro_data, shared_state)
   regional_trends_server(input, output, session, macro_data, shared_state)
   states_server(input, output, session, shared_state)
-  unemployment_server(input, output, session, macro_data, shared_state)
+  unemployment_server(input, output, session, shared_state)
   statistical_analysis_server(input, output, session, macro_data, shared_state)
   data_table_server(input, output, session, macro_data, shared_state)
   
