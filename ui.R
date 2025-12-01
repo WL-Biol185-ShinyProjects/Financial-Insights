@@ -188,7 +188,7 @@ ui <- page_navbar(
     nav_panel("Correlation Matrix", value = "macro_correlations", icon = bs_icon("grid-3x3"), correlations_ui()),
     nav_panel("Global Economic Map", value = "macro_map", icon = bs_icon("map"), global_map_ui()),
     nav_panel("Regional Trends", value = "macro_regional", icon = bs_icon("bar-chart-line"), regional_trends_ui()),
-    ##nav_panel("U.S. States", value = "macro_states", icon = bs_icon("geo-alt"), states_ui()),
+    nav_panel("U.S. States", value = "macro_states", icon = bs_icon("geo-alt"), states_ui()),
     nav_panel("State Employment", value = "macro_unemployment", icon = bs_icon("briefcase"), unemployment_ui()),
     nav_panel("Statistical Analysis", value = "macro_statistical", icon = bs_icon("calculator"), statistical_analysis_ui()),
     nav_item(tags$hr()),
