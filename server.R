@@ -7,7 +7,7 @@
 required_packages <- c(
   "shiny", "bslib", "bsicons", "shinyWidgets", "tidyverse", "WDI", # Added bslib, bsicons; removed shinydashboard (optional but kept just in case of legacy calls)
   "plotly", "DT", "scales", "corrplot", "sf", 
-  "rnaturalearth", "rnaturalearthdata", "viridis", "readxl", "ggplot2"
+  "rnaturalearth", "rnaturalearthdata", "viridis", "readxl", "ggplot2", "reshape2"
 )
 
 # Check for missing packages

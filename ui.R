@@ -4,7 +4,7 @@
 # ============================================================================
 
 # Auto-Install and Load Required Packages (UI Check) ----
-required_packages <- c("shiny", "bslib", "bsicons", "shinyWidgets", "plotly", "DT")
+required_packages <- c("shiny", "bslib", "bsicons", "shinyWidgets", "plotly", "DT", "reshape2")
 missing_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if (length(missing_packages) > 0) {
   install.packages(missing_packages, dependencies = TRUE)
