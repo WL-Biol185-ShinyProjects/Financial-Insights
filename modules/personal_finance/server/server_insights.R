@@ -1,7 +1,7 @@
 # ============================================================================
 # Credit Analytics - Server Logic
 # ============================================================================
-
+library(randomForest)
 insights_server <- function(input, output, session) {
   
   # Load credit data

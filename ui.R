@@ -30,6 +30,7 @@ source("modules/macro/ui/ui_commodity.R")
 source("modules/macro/ui/ui_statistical_analysis.R")
 source("modules/macro/ui/ui_data_table.R")
 
+source("modules/personal_finance/ui/ui_insights.R")
 source("modules/personal_finance/ui/ui_savings.R")
 source("modules/personal_finance/ui/ui_loans.R")
 source("modules/personal_finance/ui/ui_planning_guide.R")
@@ -196,6 +197,7 @@ ui <- page_navbar(
 
   # 3. Personal Finance (Dropdown) ----
   nav_menu("Personal Finance", icon = bs_icon("wallet2"),
+    nav_panel("Insights", value = "pf_insights", icon = bs_icon("search"), insights_ui()),
     nav_panel("Savings Projector", value = "pf_savings", icon = bs_icon("piggy-bank"), savings_ui()),
     nav_panel("Loan Calculator", value = "pf_loans", icon = bs_icon("calculator"), loans_ui()),
     nav_panel("Credit Card Predictor", value = "pf_credit", icon = bs_icon("credit-card"), credit_ui()),
