@@ -1,8 +1,12 @@
 # ============================================================================
 # Credit Analytics - Server Logic
 # ============================================================================
+
+
+
 library(randomForest)
 library(ggplot2)
+library(reshape2)
 
 insights_server <- function(input, output, session) {
   
@@ -61,6 +65,8 @@ insights_server <- function(input, output, session) {
       geom_point(color="#00808080", size=2) +
       geom_smooth(method="lm", color="#0099cc") +
       theme_minimal(base_size = 14) +
+      scale_x_continuous(labels = scales::label_comma()) +
+      scale_y_continuous(labels = scales::label_comma()) +
       labs(
         x = format_label(xvar),
         y = format_label(yvar),
@@ -70,23 +76,41 @@ insights_server <- function(input, output, session) {
   
   
   # ===== HEATMAP =====
-  output$corr_heatmap <- renderPlot({
-    numeric_cols <- credit_data[, sapply(credit_data, is.numeric)]
-    corr_matrix <- cor(numeric_cols, use="pairwise.complete.obs")
-    
-    # top 15 variables
-    variances <- apply(numeric_cols, 2, var)
-    top_vars <- names(sort(variances, decreasing=TRUE))[1:15]
-    corr_small <- corr_matrix[top_vars, top_vars]
-    
-    heatmap(
-      corr_small,
-      Colv = NA, Rowv = NA,
-      col = colorRampPalette(c("#313695", "#4575b4", "#91bfdb", "#fee090"))(50),
-      scale = "none",
-      margins = c(10,10)
+output$corr_heatmap <- renderPlot({
+
+  # numeric-only columns
+  numeric_cols <- credit_data[, sapply(credit_data, is.numeric)]
+
+  corr_matrix <- cor(numeric_cols, use = "pairwise.complete.obs")
+
+  variances <- apply(numeric_cols, 2, var)
+  top_vars <- names(sort(variances, decreasing = TRUE))[1:15]
+  corr_small <- corr_matrix[top_vars, top_vars]
+
+  # convert to long format
+  corr_df <- reshape2::melt(corr_small)
+  names(corr_df) <- c("Var1", "Var2", "Correlation")
+
+  ggplot(corr_df, aes(Var1, Var2, fill = Correlation)) +
+    geom_tile() +
+    scale_fill_gradient2(
+      low = "#4575b4",
+      mid = "#ffffff",
+      high = "#fdae61",
+      midpoint = 0,
+      limits = c(-1, 1),
+      name = "Correlation"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.text.y = element_text(size = 10),
+      axis.title = element_blank(),
+      legend.position = "right"
     )
-  })
+})
+
+
   
   # ===== FEATURE IMPORTANCE =====
   output$feature_importance <- renderPlot({
