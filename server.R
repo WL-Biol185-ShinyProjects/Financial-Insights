@@ -54,6 +54,7 @@ source("modules/macro/server/server_commodity.R")
 source("modules/macro/server/server_statistical_analysis.R")
 source("modules/macro/server/server_data_table.R")
 
+source("modules/personal_finance/server/server_insights.R")
 source("modules/personal_finance/server/server_savings.R")
 source("modules/personal_finance/server/server_loans.R")
 source("modules/personal_finance/server/server_planning_guide.R")
