@@ -1,7 +1,8 @@
 # ============================================================================
 # Credit Analytics - UI Component
 # ============================================================================
-read.csv("data/insights/credit_score.csv")
+
+library(ggplot2)
 
 
 insights_ui <- function() {

@@ -7,7 +7,7 @@
 required_packages <- c(
   "shiny", "bslib", "bsicons", "shinyWidgets", "tidyverse", "WDI", # Added bslib, bsicons; removed shinydashboard (optional but kept just in case of legacy calls)
   "plotly", "DT", "scales", "corrplot", "sf", 
-  "rnaturalearth", "rnaturalearthdata", "viridis", "readxl"
+  "rnaturalearth", "rnaturalearthdata", "viridis", "readxl", "ggplot2"
 )
 
 # Check for missing packages
@@ -41,6 +41,8 @@ library(sf)
 library(rnaturalearth)
 library(viridis)
 library(readxl)
+library(ggplot2)
+library(randomForest)
 
 # Source Server Logic ----
 source("modules/macro/server/server_time_series.R")
@@ -95,6 +97,7 @@ function(input, output, session) {
   data_table_server(input, output, session, macro_data, shared_state)
   
   # Module 2: Personal Finance Tools Servers ----
+  insights_server(input, output, session)
   savings_server(input, output, session)
   loans_server(input, output, session)
   planning_guide_server(input, output, session)

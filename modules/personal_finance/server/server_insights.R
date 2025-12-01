@@ -2,6 +2,8 @@
 # Credit Analytics - Server Logic
 # ============================================================================
 library(randomForest)
+library(ggplot2)
+
 insights_server <- function(input, output, session) {
   
   # Load credit data
@@ -65,6 +67,7 @@ insights_server <- function(input, output, session) {
         title = paste("Relationship between", format_label(xvar), "and", format_label(yvar))
       )
   })
+  
   
   # ===== HEATMAP =====
   output$corr_heatmap <- renderPlot({
