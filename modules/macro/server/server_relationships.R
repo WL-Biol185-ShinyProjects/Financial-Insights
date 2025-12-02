@@ -10,6 +10,37 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
     updateSelectizeInput(session, "rel_country", choices = countries, selected = "United States", server = TRUE)
   })
   
+  # Prevent same indicator for both axes
+  # When Indicator 1 (Left Axis) changes, if it matches Indicator 2, change Indicator 2
+  observeEvent(input$rel_y1, {
+    if (!is.null(input$rel_y1) && !is.null(input$rel_y2) && input$rel_y1 == input$rel_y2) {
+      # Get all available indicators
+      all_indicators <- c("gdp_per_capita", "inflation", "unemployment", "life_expectancy", "govt_debt")
+      # Find a different indicator (prefer "inflation" if available, otherwise first different one)
+      alternate <- if ("inflation" %in% all_indicators && input$rel_y1 != "inflation") {
+        "inflation"
+      } else {
+        all_indicators[all_indicators != input$rel_y1][1]
+      }
+      updateSelectInput(session, "rel_y2", selected = alternate)
+    }
+  })
+  
+  # When Indicator 2 (Right Axis) changes, if it matches Indicator 1, change Indicator 1
+  observeEvent(input$rel_y2, {
+    if (!is.null(input$rel_y1) && !is.null(input$rel_y2) && input$rel_y1 == input$rel_y2) {
+      # Get all available indicators
+      all_indicators <- c("gdp_per_capita", "inflation", "unemployment", "life_expectancy", "govt_debt")
+      # Find a different indicator (prefer "gdp_per_capita" if available, otherwise first different one)
+      alternate <- if ("gdp_per_capita" %in% all_indicators && input$rel_y2 != "gdp_per_capita") {
+        "gdp_per_capita"
+      } else {
+        all_indicators[all_indicators != input$rel_y2][1]
+      }
+      updateSelectInput(session, "rel_y1", selected = alternate)
+    }
+  })
+  
   # Reactive data - Auto-updates on input change
   rel_data <- reactive({
     req(input$rel_country, input$rel_y1, input$rel_y2)

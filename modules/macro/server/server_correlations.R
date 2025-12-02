@@ -4,19 +4,89 @@
 
 correlations_server <- function(input, output, session, macro_data, shared_state) {
   
-  # Initialize country selector
+  # Animation state
+  is_playing <- reactiveVal(FALSE)
+  
+  # Get year range from data
+  year_range <- reactive({
+    req(macro_data)
+    years <- sort(unique(macro_data$year))
+    list(min = min(years, na.rm = TRUE), max = max(years, na.rm = TRUE), all = years)
+  })
+  
+  # Initialize country selector and year slider
   observe({
     countries <- unique(macro_data$country) %>% sort()
     updateSelectizeInput(session, "corr_countries", choices = countries, server = TRUE)
+    
+    # Initialize year slider with available years
+    years <- year_range()$all
+    updateSliderInput(session, "corr_year", min = min(years), max = max(years), 
+                     value = max(years, na.rm = TRUE))
+  })
+  
+  # Play/Pause button handler
+  observeEvent(input$corr_play_pause, {
+    if (is_playing()) {
+      # Pause animation
+      is_playing(FALSE)
+      updateActionButton(session, "corr_play_pause", label = "Play", icon = shiny::icon("play"))
+    } else {
+      # Start animation
+      is_playing(TRUE)
+      updateActionButton(session, "corr_play_pause", label = "Pause", icon = shiny::icon("pause"))
+    }
+  })
+  
+  # Animation timer - updates every 500ms
+  auto_invalidate <- reactiveTimer(500, session)
+  
+  # Animation logic - triggered by timer when playing
+  observe({
+    # Trigger timer (this makes the observe block re-run every 500ms)
+    auto_invalidate()
+    
+    # Only proceed if playing
+    if (!is_playing()) return()
+    
+    years <- year_range()$all
+    current_year <- input$corr_year
+    current_idx <- which(years == current_year)
+    
+    if (length(current_idx) == 0) {
+      current_idx <- 1
+    }
+    
+    # Move to next year
+    if (current_idx < length(years)) {
+      next_year <- years[current_idx + 1]
+      updateSliderInput(session, "corr_year", value = next_year)
+    } else {
+      # Reached the end, stop animation
+      is_playing(FALSE)
+      updateActionButton(session, "corr_play_pause", label = "Play", icon = shiny::icon("play"))
+    }
+  })
+  
+  # Animation status text
+  output$corr_animation_status <- renderText({
+    if (is_playing()) {
+      years <- year_range()$all
+      current_idx <- which(years == input$corr_year)
+      total <- length(years)
+      paste("Playing:", current_idx, "of", total, "years")
+    } else {
+      ""
+    }
   })
   
   # Reactive Correlation Matrix - Auto-updates on input change
   corr_data <- reactive({
-    req(input$corr_year_range)
+    req(input$corr_year)
     
-    # Filter data by year
+    # Filter data by single year
     data <- macro_data %>%
-      filter(year >= input$corr_year_range[1], year <= input$corr_year_range[2])
+      filter(year == input$corr_year)
     
     # Filter by country if selected
     if (!is.null(input$corr_countries) && length(input$corr_countries) > 0) {
@@ -41,19 +111,31 @@ correlations_server <- function(input, output, session, macro_data, shared_state
     M <- corr_data()
     
     validate(
-      need(!any(is.na(M)), "Insufficient data to calculate correlations for this selection. Try selecting a longer year range or more countries.")
+      need(!any(is.na(M)), "Insufficient data to calculate correlations for this selection. Try selecting more countries.")
     )
     
-    # Professional Color Palette for Correlations
-    # Diverging: Red (Neg) - White - Blue (Pos)
-    col <- colorRampPalette(c("#EF4444", "#FFFFFF", "#3B82F6"))(200)
+    # Colorblind-friendly diverging palette
+    # Blue (negative) -> White (zero) -> Orange (positive)
+    # This palette works for all types of colorblindness (protanopia, deuteranopia, tritanopia)
+    # Colors chosen to be distinguishable by brightness and hue even for colorblind users
+    col <- colorRampPalette(c(
+      "#2166AC",  # Dark blue (strong negative)
+      "#4393C3",  # Medium blue
+      "#92C5DE",  # Light blue
+      "#D1E5F0",  # Very light blue
+      "#FFFFFF",  # White (zero correlation)
+      "#FDDBC7",  # Very light orange
+      "#F4A582",  # Light orange
+      "#D6604D",  # Medium orange-red
+      "#B2182B"   # Dark red (strong positive)
+    ))(200)
     
     corrplot(M, 
              method = "color", 
              type = "upper", 
              order = "hclust", 
              col = col,
-             addCoef.col = "#0F172A", # Dark Slate for text
+             addCoef.col = "#0F172A", # Dark Slate for text (high contrast)
              tl.col = "#0F172A",      # Dark Slate for labels
              tl.srt = 45,             # Rotated labels
              diag = FALSE,            # Hide diagonal
