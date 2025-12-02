@@ -38,20 +38,23 @@ The application uses classical statistical methods, interactive visualizations, 
 - Dual-axis indicator relationships for country-specific analysis
 - Indicator vs. commodity prices (gold and oil) comparison - U.S. specific
 - Correlation matrix with country filtering
-- Interactive world maps with dynamic color scaling
+- Interactive world maps with dynamic color scaling and multi-indicator comparison (add multiple indicators to compare side-by-side)
 - Regional trend comparisons using population-weighted averages
 - U.S. state-level economic analysis
 - Statistical analysis (ANOVA, regression, Chi-Square test of independence)
 - Downloadable data tables
 
-**Indicators:** GDP, GDP per capita, inflation, unemployment, government debt, life expectancy, population growth, exchange rates, trade balance
+**Indicators:** GDP per capita, inflation, unemployment, government debt, life expectancy, population growth
 
 ### Module 2: Personal Finance Tools
 
 **Features:**
-- Savings calculator with compound interest projections and growth charts
-- Loan calculator with amortization schedules and approval probability using gradient descent logistic regression
-- 50/30/20 savings guide with current vs. recommended spending analysis
+- **Credit Score Analytics (Insights)**: Interactive exploration of credit score relationships using scatter plots, correlation heatmaps, and Random Forest feature importance analysis
+- **Savings Projector**: Compound interest calculator with growth projections and personalized savings rate recommendations
+- **Loan Calculator**: Amortization schedules, payment analysis, and loan approval probability predictions using gradient descent logistic regression
+- **Credit Card Predictor**: Random Forest machine learning model to predict credit card approval probability based on financial profile
+- **50/30/20 Financial Guide**: Budget planning tool comparing current spending vs. recommended allocations (needs/wants/savings)
+- **Personal Finance Data Explorer**: Browse and download loan approval and credit card datasets used in the application
 
 ### Module 3: Retirement Risk Simulator
 
@@ -75,8 +78,10 @@ The application uses classical statistical methods, interactive visualizations, 
 
 ### Module 2: Personal Finance Tools
 
+- How do income, savings, debt, and spending patterns relate to credit scores?
+- Which financial variables are most important in predicting credit scores?
 - What savings rate is needed to reach specific financial goals?
-- How do credit profiles affect loan approval probability?
+- How do credit profiles affect loan and credit card approval probability?
 - What is the total cost of borrowing over different loan terms?
 
 ### Module 3: Retirement Risk Simulator
@@ -89,7 +94,7 @@ The application uses classical statistical methods, interactive visualizations, 
 
 ## Methodology
 
-**Data Collection:** World Bank World Development Indicators (WDI) via R package API, U.S. Census Bureau ACS, Bureau of Labor Statistics, MERIC, and publicly available commodity price datasets.
+**Data Collection:** World Bank World Development Indicators (WDI) accessed via WDI R package API, U.S. Census Bureau American Community Survey (ACS), Bureau of Labor Statistics (LAUS and JOLTS), Missouri Economic Research and Information Center (MERIC), Federal Reserve Economic Data (FRED), DataHub.io, and publicly available personal finance training datasets.
 
 **Data Processing:** ETL processes documented in R Markdown files. Data cleaning includes removal of aggregate regions, missing value handling, standardization of country codes, and validation checks.
 
@@ -116,6 +121,9 @@ Selected to model retirement portfolio uncertainty by simulating thousands of po
 **Gradient Descent Logistic Regression (loan approval):**
 Chosen to predict binary outcomes (loan approval/rejection) based on borrower characteristics. Trained on historical loan approval data to learn patterns in creditworthiness. Interpretation: Provides probability scores for loan approval, helping users understand how factors like income, credit score, and employment history influence approval likelihood. The gradient descent approach allows the model to learn from data without requiring explicit statistical assumptions.
 
+**Random Forest (credit card approval and credit score prediction):**
+Selected for both credit card approval prediction and credit score feature importance analysis. Random Forest is an ensemble method that combines multiple decision trees to improve prediction accuracy and provide feature importance metrics. Interpretation: For credit card approval, provides probability scores based on applicant characteristics. For credit score analysis, identifies which financial variables (income, savings, debt ratios, etc.) are most influential in determining credit scores through %IncMSE (percentage increase in mean squared error) metrics.
+
 **Visualization:** Interactive time-series plots, scatterplots, correlation heatmaps, choropleth maps, and dual-axis comparisons using plotly and ggplot2.
 
 ---
@@ -123,13 +131,15 @@ Chosen to predict binary outcomes (loan approval/rejection) based on borrower ch
 ## Data Sources and Citations
 
 **World Bank World Development Indicators:**
-World Bank. (2024). World Development Indicators. The World Bank Group. Available at: https://datatopics.worldbank.org/world-development-indicators/. License: CC BY-4.0
+World Bank. (2024). World Development Indicators. The World Bank Group. Available at: https://datatopics.worldbank.org/world-development-indicators/. Data accessed via WDI R package API. License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 
 **U.S. Census Bureau American Community Survey:**
-U.S. Census Bureau. (2023). American Community Survey 5-Year Estimates. Retrieved from https://www.census.gov/programs-surveys/acs. License: Public Domain (U.S. Government Work)
+U.S. Census Bureau. (2023). American Community Survey 5-Year Estimates (Tables B19013 - Median Household Income, B17001 - Poverty Status). Retrieved from https://www.census.gov/programs-surveys/acs. License: Public Domain (U.S. Government Work)
 
 **Bureau of Labor Statistics:**
-U.S. Bureau of Labor Statistics. Local Area Unemployment Statistics. Retrieved from https://www.bls.gov/lau/. License: Public Domain (U.S. Government Work)
+U.S. Bureau of Labor Statistics. Local Area Unemployment Statistics (LAUS). Retrieved from https://www.bls.gov/lau/. License: Public Domain (U.S. Government Work)
+
+U.S. Bureau of Labor Statistics. Job Openings and Labor Turnover Survey (JOLTS) - Job Openings, Hires, and Quits by State. Retrieved from https://www.bls.gov/jlt/. License: Public Domain (U.S. Government Work)
 
 **MERIC Cost of Living Data:**
 Missouri Economic Research and Information Center. Cost of Living Data Series. Retrieved from https://meric.mo.gov/data/cost-living-data-series. License: Public Domain (State Government Work)
@@ -138,6 +148,13 @@ Missouri Economic Research and Information Center. Cost of Living Data Series. R
 DataHub.io. Core Gold Prices Dataset. Retrieved from https://datahub.io/core/gold-prices. License: Public Domain / Open Data
 
 Federal Reserve Bank of St. Louis. FRED Economic Data - WTI Crude Oil Prices (DCOILWTICO). Retrieved from https://fred.stlouisfed.org/series/DCOILWTICO. License: Public Domain (U.S. Government Work)
+
+**Personal Finance Training Datasets:**
+Loan Approval Dataset: Historical loan application records used for training gradient descent logistic regression model. Dataset includes borrower characteristics (income, credit score, loan amount, years employed) and approval outcomes. Source: Publicly available loan approval dataset. Note: For academic use, verify specific dataset source and license compliance.
+
+Credit Card Approval Dataset: Historical credit card application records used for training Random Forest classification model (500 decision trees). Dataset includes applicant demographics, financial information, and approval decisions. Source: Publicly available credit card approval dataset. Note: For academic use, verify specific dataset source and license compliance.
+
+Credit Score Analytics Dataset: Customer financial data including income, savings, debt, spending patterns, and credit scores. Used for Random Forest regression analysis (300 decision trees) to identify key credit score predictors through feature importance metrics. Source: Publicly available credit score dataset. Note: For academic use, verify specific dataset source and license compliance.
 
 ---
 

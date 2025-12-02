@@ -2,12 +2,6 @@
 # Credit Analytics - Server Logic
 # ============================================================================
 
-
-
-library(randomForest)
-library(ggplot2)
-library(reshape2)
-
 insights_server <- function(input, output, session) {
   
   # Load credit data
@@ -72,15 +66,24 @@ insights_server <- function(input, output, session) {
   
   # ===== FILTERED DATASET =====
   filtered_credit <- reactive({
+    req(nrow(credit_data) > 0)
     data <- credit_data
-    if (input$default_filter == "Defaulted") data <- subset(data, DEFAULT == 1)
-    if (input$default_filter == "Not Defaulted") data <- subset(data, DEFAULT == 0)
+    if (!is.null(input$default_filter)) {
+      if (input$default_filter == "Defaulted" && "DEFAULT" %in% names(data)) {
+        data <- subset(data, DEFAULT == 1)
+      } else if (input$default_filter == "Not Defaulted" && "DEFAULT" %in% names(data)) {
+        data <- subset(data, DEFAULT == 0)
+      }
+    }
     data
   })
   
   # ===== SCATTER PLOT =====
   output$score_scatter_plot <- renderPlot({
+    req(input$x_var, input$y_var)
     data <- filtered_credit()
+    req(nrow(data) > 0, input$x_var %in% names(data), input$y_var %in% names(data))
+    
     xvar <- input$x_var
     yvar <- input$y_var
     
@@ -99,12 +102,14 @@ insights_server <- function(input, output, session) {
   
   
   # ===== HEATMAP =====
-output$corr_heatmap <- renderPlot({
-
-  # numeric-only columns
-  numeric_cols <- credit_data[, sapply(credit_data, is.numeric)]
-
-  corr_matrix <- cor(numeric_cols, use = "pairwise.complete.obs")
+  output$corr_heatmap <- renderPlot({
+    req(nrow(credit_data) > 0)
+    
+    # numeric-only columns
+    numeric_cols <- credit_data[, sapply(credit_data, is.numeric), drop = FALSE]
+    req(ncol(numeric_cols) > 0)
+    
+    corr_matrix <- cor(numeric_cols, use = "pairwise.complete.obs")
 
   variances <- apply(numeric_cols, 2, var)
   top_vars <- names(sort(variances, decreasing = TRUE))[1:15]
@@ -137,7 +142,10 @@ output$corr_heatmap <- renderPlot({
   
   # ===== FEATURE IMPORTANCE =====
   output$feature_importance <- renderPlot({
-    model_data <- credit_data[, !(names(credit_data) %in% c("CUST_ID", "DEFAULT"))]
+    req(nrow(credit_data) > 0, "CREDIT_SCORE" %in% names(credit_data))
+    
+    model_data <- credit_data[, !(names(credit_data) %in% c("CUST_ID", "DEFAULT")), drop = FALSE]
+    req(ncol(model_data) > 1, "CREDIT_SCORE" %in% names(model_data))
     
     rf <- randomForest(
       CREDIT_SCORE ~ ., 

@@ -57,9 +57,11 @@ home_ui <- function() {
           p("Tools to manage your wealth today."),
           tags$ul(
             class = "list-unstyled",
+            tags$li(bs_icon("check-circle"), " Credit Score Analytics"),
             tags$li(bs_icon("check-circle"), " Savings Growth Projector"),
-            tags$li(bs_icon("check-circle"), " Loan Amortization"),
-            tags$li(bs_icon("check-circle"), " Financial Health Guide")
+            tags$li(bs_icon("check-circle"), " Loan Amortization & Approval"),
+            tags$li(bs_icon("check-circle"), " Credit Card Predictor"),
+            tags$li(bs_icon("check-circle"), " 50/30/20 Financial Guide")
           ),
           actionButton("btn_goto_finance", "Plan Your Finances",
             icon = icon("arrow-right"),
