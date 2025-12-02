@@ -182,5 +182,5 @@ The application will automatically install required packages on first run. All d
 
 ---
 
-**Last Updated:** November 2025  
-**Version:** 2.0.0
+**Last Updated:** December 2025  
+**Version:** 2.1
