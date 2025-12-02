@@ -7,9 +7,81 @@ commodity_server <- function(input, output, session, macro_data, shared_state) {
   # This analysis is limited to United States only
   selected_country <- "United States"
   
+  # Animation state
+  is_playing <- reactiveVal(FALSE)
+  
   # Cache for commodity data (gold and oil)
   gold_cache <- reactiveVal(NULL)
   oil_cache <- reactiveVal(NULL)
+  
+  # Get year range from data
+  year_range <- reactive({
+    req(macro_data)
+    years <- sort(unique(macro_data$year))
+    list(min = min(years, na.rm = TRUE), max = max(years, na.rm = TRUE), all = years)
+  })
+  
+  # Initialize year slider
+  observe({
+    years <- year_range()$all
+    updateSliderInput(session, "commodity_year", min = min(years), max = max(years), 
+                     value = max(years, na.rm = TRUE))
+  })
+  
+  # Play/Pause button handler
+  observeEvent(input$commodity_play_pause, {
+    if (is_playing()) {
+      # Pause animation
+      is_playing(FALSE)
+      updateActionButton(session, "commodity_play_pause", label = "Play", icon = shiny::icon("play"))
+    } else {
+      # Start animation
+      is_playing(TRUE)
+      updateActionButton(session, "commodity_play_pause", label = "Pause", icon = shiny::icon("pause"))
+    }
+  })
+  
+  # Animation timer - updates every 500ms
+  auto_invalidate <- reactiveTimer(500, session)
+  
+  # Animation logic - triggered by timer when playing
+  observe({
+    # Trigger timer (this makes the observe block re-run every 500ms)
+    auto_invalidate()
+    
+    # Only proceed if playing
+    if (!is_playing()) return()
+    
+    years <- year_range()$all
+    current_year <- input$commodity_year
+    current_idx <- which(years == current_year)
+    
+    if (length(current_idx) == 0) {
+      current_idx <- 1
+    }
+    
+    # Move to next year
+    if (current_idx < length(years)) {
+      next_year <- years[current_idx + 1]
+      updateSliderInput(session, "commodity_year", value = next_year)
+    } else {
+      # Reached the end, stop animation
+      is_playing(FALSE)
+      updateActionButton(session, "commodity_play_pause", label = "Play", icon = shiny::icon("play"))
+    }
+  })
+  
+  # Animation status text
+  output$commodity_animation_status <- renderText({
+    if (is_playing()) {
+      years <- year_range()$all
+      current_idx <- which(years == input$commodity_year)
+      total <- length(years)
+      paste("Playing:", current_idx, "of", total, "years")
+    } else {
+      ""
+    }
+  })
   
   # Get Gold Prices data from DataHub.io
   gold_data <- reactive({
@@ -184,15 +256,15 @@ commodity_server <- function(input, output, session, macro_data, shared_state) {
   })
   
   # Reactive data - Merge indicator data with commodity prices
+  # For animation, we'll show data up to the selected year
   commodity_merged_data <- reactive({
-    req(input$commodity_indicator, input$commodity_year_range, input$commodity_type)
+    req(input$commodity_indicator, input$commodity_year, input$commodity_type)
     
-    # Get indicator data for United States only
+    # Get indicator data for United States only, up to selected year
     indicator_data <- macro_data %>%
       filter(
         country == selected_country,
-        year >= input$commodity_year_range[1],
-        year <= input$commodity_year_range[2],
+        year <= input$commodity_year,
         !is.na(.data[[input$commodity_indicator]])
       ) %>%
       select(year, indicator_value = .data[[input$commodity_indicator]]) %>%
@@ -204,6 +276,10 @@ commodity_server <- function(input, output, session, macro_data, shared_state) {
     if (nrow(commodity) == 0) {
       return(data.frame(year = integer(0), indicator_value = numeric(0), price = numeric(0)))
     }
+    
+    # Filter commodity data up to selected year
+    commodity <- commodity %>%
+      filter(year <= input$commodity_year)
     
     # Merge on year
     merged <- indicator_data %>%
@@ -219,8 +295,8 @@ commodity_server <- function(input, output, session, macro_data, shared_state) {
     data <- commodity_merged_data()
     
     validate(
-      need(nrow(data) > 0, paste("No data available for selected indicator and year range.", 
-                                  "Commodity data may not be available for all years."))
+      need(nrow(data) > 0, paste("No data available for selected indicator and year.", 
+                                  "Commodity data may not be available for this year."))
     )
     
     # Indicator and commodity labels

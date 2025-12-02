@@ -33,10 +33,21 @@ commodity_ui <- function() {
                              "Population Growth" = "pop_growth"),
                    selected = "gdp_per_capita"),
         
-        # Year Range
-        sliderInput("commodity_year_range", "Year Range:", 
-                   min = 1960, max = 2023, value = c(1960, 2023), 
-                   sep = "", step = 1)
+        # Year slider and play/pause button
+        fluidRow(
+          column(8,
+            sliderInput("commodity_year", "Year:", min = 1960, max = 2023, value = 2000, sep = "", 
+                       animate = FALSE, width = "100%")
+          ),
+          column(4,
+            br(),
+            actionButton("commodity_play_pause", "Play", icon = shiny::icon("play"), 
+                        class = "btn-primary", style = "width: 100%; margin-top: 5px;")
+          )
+        ),
+        div(style = "font-size: 12px; color: #64748b; margin-top: 5px;",
+          textOutput("commodity_animation_status", inline = TRUE)
+        )
       )
     ),
     column(8,
