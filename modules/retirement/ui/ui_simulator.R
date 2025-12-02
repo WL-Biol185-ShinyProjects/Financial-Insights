@@ -26,10 +26,7 @@ renderInputs <- function(prefix) {
                    min = 1000, max = 100000, value = 10000,
                    step = 1000, pre = "$", sep = ",")
       )
-    ),
-    div(style = "text-align: center; margin-top: 20px;",
-        actionButton(paste0(prefix, "_recalculate"), "Re-run Simulation",
-                    class = "btn-primary"))
+    )
   )
 }
 

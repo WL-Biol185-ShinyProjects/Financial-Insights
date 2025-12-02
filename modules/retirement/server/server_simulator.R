@@ -79,21 +79,8 @@ getParameters <- function(prefix, input) {
 
 simulator_server <- function(input, output, session) {
   
-  trigger_a <- reactiveVal(0)
-  trigger_b <- reactiveVal(0)
-  
-  # Add button observers
-  observeEvent(input$case_a_for_retirement_recalculate, {
-    trigger_a(trigger_a() + 1)
-  })
-  
-  observeEvent(input$case_b_for_retirement_recalculate, {
-    trigger_b(trigger_b() + 1)
-  })
-  
   # Reactive simulations for scenarios A and B with input validation
   navA <- reactive({
-    trigger_a()  # Dependency on trigger
     params <- getParameters("case_a_for_retirement", input)
     
     # Validate inputs
@@ -110,7 +97,6 @@ simulator_server <- function(input, output, session) {
   })
   
   navB <- reactive({
-    trigger_b()  # Dependency on trigger
     params <- getParameters("case_b_for_retirement", input)
     
     # Validate inputs
