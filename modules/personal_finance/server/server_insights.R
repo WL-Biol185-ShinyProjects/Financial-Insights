@@ -47,6 +47,29 @@ insights_server <- function(input, output, session) {
     if ("CAT_DEPENDENTS" %in% names(credit_data)) credit_data$CAT_DEPENDENTS <- as.factor(credit_data$CAT_DEPENDENTS)
   }
   
+  # ===== PREVENT SAME VARIABLE FOR X AND Y =====
+  # If X changes and matches Y, change Y to a different variable
+  observeEvent(input$x_var, {
+    if (!is.null(input$x_var) && !is.null(input$y_var) && input$x_var == input$y_var) {
+      # Get all available variables
+      all_vars <- c("INCOME", "SAVINGS", "DEBT", "R_SAVINGS_INCOME", "R_DEBT_INCOME", "R_DEBT_SAVINGS", "CREDIT_SCORE")
+      # Find a different variable (prefer Credit Score as default)
+      new_y <- if ("CREDIT_SCORE" != input$x_var) "CREDIT_SCORE" else all_vars[all_vars != input$x_var][1]
+      updateSelectInput(session, "y_var", selected = new_y)
+    }
+  })
+  
+  # If Y changes and matches X, change X to a different variable
+  observeEvent(input$y_var, {
+    if (!is.null(input$x_var) && !is.null(input$y_var) && input$x_var == input$y_var) {
+      # Get all available variables
+      all_vars <- c("INCOME", "SAVINGS", "DEBT", "R_SAVINGS_INCOME", "R_DEBT_INCOME", "R_DEBT_SAVINGS", "CREDIT_SCORE")
+      # Find a different variable (prefer Income as default)
+      new_x <- if ("INCOME" != input$y_var) "INCOME" else all_vars[all_vars != input$y_var][1]
+      updateSelectInput(session, "x_var", selected = new_x)
+    }
+  })
+  
   # ===== FILTERED DATASET =====
   filtered_credit <- reactive({
     data <- credit_data
