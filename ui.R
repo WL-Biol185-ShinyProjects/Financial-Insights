@@ -10,13 +10,17 @@ if (length(missing_packages) > 0) {
   install.packages(missing_packages, dependencies = TRUE)
 }
 
-# Load Libraries ----
+# Load Libraries ---- 
 library(shiny)
 library(bslib)          # Modern Bootstrap 5 theming
 library(bsicons)        # Bootstrap icons
 library(shinyWidgets)
 library(plotly)
 library(DT)
+library(reshape2)
+library(randomForest)
+library(ggplot2)
+library(dplyr)
 
 # Source UI Components ----
 source("modules/macro/ui/ui_time_series.R")

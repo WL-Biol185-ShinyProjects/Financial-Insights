@@ -1,8 +1,5 @@
 credit_server <- function(input, output, session) {
   
-  library(randomForest)
-  library(readxl)
-  
   # Load and prepare data for credit card model
   clean_dataset <- read_excel("data/credit/clean_dataset.xlsx")
   
