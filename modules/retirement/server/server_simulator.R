@@ -1,5 +1,5 @@
 # ============================================================================
-# Monte Carlo Simulator - Server Logic (Dual Scenario System)
+# Monte Carlo Simulator - Server Logic (Auto-Update System)
 # ============================================================================
 
 # Monte Carlo simulation function (matches reference implementation)
@@ -80,6 +80,7 @@ getParameters <- function(prefix, input) {
 simulator_server <- function(input, output, session) {
   
   # Reactive simulations for scenarios A and B with input validation
+  # These now automatically re-run whenever any input changes
   navA <- reactive({
     params <- getParameters("case_a_for_retirement", input)
     
