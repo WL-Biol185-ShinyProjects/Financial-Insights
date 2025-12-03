@@ -37,6 +37,8 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
       # Start animation
       is_playing(TRUE)
       updateActionButton(session, "rel_play_pause", label = "Pause", icon = shiny::icon("pause"))
+      # Trigger the animation observe block immediately
+      invalidateLater(0, session)
     }
   })
   
@@ -49,9 +51,6 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
   observe({
     # Only proceed if playing
     if (!is_playing()) return()
-    
-    # Invalidate after the specified delay
-    invalidateLater(animation_speed(), session)
     
     years <- year_range()$all
     current_year <- input$rel_year
@@ -70,6 +69,9 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
       is_playing(FALSE)
       updateActionButton(session, "rel_play_pause", label = "Play", icon = shiny::icon("play"))
     }
+    
+    # Re-schedule for next iteration at the specified speed
+    invalidateLater(animation_speed(), session)
   })
   
   # Animation status text

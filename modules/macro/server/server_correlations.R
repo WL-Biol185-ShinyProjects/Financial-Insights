@@ -35,6 +35,8 @@ correlations_server <- function(input, output, session, macro_data, shared_state
       # Start animation
       is_playing(TRUE)
       updateActionButton(session, "corr_play_pause", label = "Pause", icon = shiny::icon("pause"))
+      # Trigger the animation observe block immediately
+      invalidateLater(0, session)
     }
   })
   
@@ -47,9 +49,6 @@ correlations_server <- function(input, output, session, macro_data, shared_state
   observe({
     # Only proceed if playing
     if (!is_playing()) return()
-    
-    # Invalidate after the specified delay
-    invalidateLater(animation_speed(), session)
     
     years <- year_range()$all
     current_year <- input$corr_year
@@ -68,6 +67,9 @@ correlations_server <- function(input, output, session, macro_data, shared_state
       is_playing(FALSE)
       updateActionButton(session, "corr_play_pause", label = "Play", icon = shiny::icon("play"))
     }
+    
+    # Re-schedule for next iteration at the specified speed
+    invalidateLater(animation_speed(), session)
   })
   
   # Animation status text

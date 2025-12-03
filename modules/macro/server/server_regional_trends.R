@@ -24,6 +24,8 @@ regional_trends_server <- function(input, output, session, macro_data, shared_st
       # Start animation
       is_playing(TRUE)
       updateActionButton(session, "reg_play_pause", label = "Pause", icon = shiny::icon("pause"))
+      # Trigger the animation observe block immediately
+      invalidateLater(0, session)
     }
   })
   
@@ -36,9 +38,6 @@ regional_trends_server <- function(input, output, session, macro_data, shared_st
   observe({
     # Only proceed if playing
     if (!is_playing()) return()
-    
-    # Invalidate after the specified delay
-    invalidateLater(animation_speed(), session)
     
     years <- year_range()$all
     current_year <- input$reg_year
@@ -57,6 +56,9 @@ regional_trends_server <- function(input, output, session, macro_data, shared_st
       is_playing(FALSE)
       updateActionButton(session, "reg_play_pause", label = "Play", icon = shiny::icon("play"))
     }
+    
+    # Re-schedule for next iteration at the specified speed
+    invalidateLater(animation_speed(), session)
   })
   
   # Reset to first year when indicator changes
