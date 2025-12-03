@@ -60,7 +60,7 @@ about_ui <- function() {
             "Note: Dataset source and license information should be verified for academic use.", tags$br(), tags$br(),
             "Credit Score Analytics Dataset: Customer financial data including income, savings, debt, spending patterns, ",
             "and credit scores. Used for Random Forest regression analysis (300 trees) to identify key credit score predictors. ",
-            "Note: Dataset source and license information should be verified for academic use."
+            "Note: Dataset source and license information should be verified for academic use."), tags$a(href = "https://www.kaggle.com/datasets/conorsully1/credit-score", target = "_blank", "Credit Score"), tags$br(), tags$br(),
           ),
           hr(),
           h4("Methodology", class = "mt-4"),
@@ -135,5 +135,5 @@ about_ui <- function() {
         )
       )
     )
-  )
+  
 }
