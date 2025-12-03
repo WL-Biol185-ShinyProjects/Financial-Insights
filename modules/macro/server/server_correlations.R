@@ -84,13 +84,21 @@ correlations_server <- function(input, output, session, macro_data, shared_state
   corr_data <- reactive({
     req(input$corr_year)
     
-    # Filter data by single year
-    data <- macro_data %>%
-      filter(year == input$corr_year)
-    
     # Filter by country if selected
     if (!is.null(input$corr_countries) && length(input$corr_countries) > 0) {
-      data <- data %>% filter(country %in% input$corr_countries)
+      data <- macro_data %>% filter(country %in% input$corr_countries)
+      
+      # If only one country selected, calculate correlations across years for that country
+      if (length(input$corr_countries) == 1) {
+        # Use all years up to selected year for single country
+        data <- data %>% filter(year <= input$corr_year)
+      } else {
+        # Multiple countries: calculate correlations across countries for selected year
+        data <- data %>% filter(year == input$corr_year)
+      }
+    } else {
+      # No country filter: use all countries for selected year
+      data <- macro_data %>% filter(year == input$corr_year)
     }
     
     # Select numeric indicators
@@ -110,8 +118,27 @@ correlations_server <- function(input, output, session, macro_data, shared_state
   output$corr_plot <- renderPlot({
     M <- corr_data()
     
+    # Check if we have enough data points
+    if (!is.null(input$corr_countries) && length(input$corr_countries) > 0) {
+      if (length(input$corr_countries) == 1) {
+        # For single country, need multiple years
+        data <- macro_data %>% 
+          filter(country %in% input$corr_countries, year <= input$corr_year)
+        validate(
+          need(nrow(data) >= 2, "Insufficient data: Need at least 2 years of data to calculate correlations. Try selecting a later year or a different country.")
+        )
+      } else {
+        # For multiple countries, need multiple countries for the year
+        data <- macro_data %>% 
+          filter(country %in% input$corr_countries, year == input$corr_year)
+        validate(
+          need(nrow(data) >= 2, "Insufficient data: Need at least 2 countries with data for this year to calculate correlations.")
+        )
+      }
+    }
+    
     validate(
-      need(!any(is.na(M)), "Insufficient data to calculate correlations for this selection. Try selecting more countries.")
+      need(!any(is.na(M)), "Insufficient data to calculate correlations for this selection. Try selecting more countries or a different year range.")
     )
     
     # Colorblind-friendly diverging palette
