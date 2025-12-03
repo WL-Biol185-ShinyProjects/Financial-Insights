@@ -36,9 +36,6 @@ commodity_ui <- function() {
         # Year slider and play/pause button
         sliderInput("commodity_year", "Year:", min = 1960, max = 2023, value = 2000, sep = "", 
                    animate = FALSE, width = "100%"),
-        selectInput("commodity_speed", "Animation Speed:", 
-                   choices = c("Very Slow" = 2000, "Slow" = 1000, "Normal" = 500, "Fast" = 250, "Very Fast" = 100),
-                   selected = 500, width = "100%"),
         fluidRow(
           column(12,
             actionButton("commodity_play_pause", "Play", icon = shiny::icon("play"), 

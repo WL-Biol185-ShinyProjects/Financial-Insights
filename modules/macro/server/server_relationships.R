@@ -47,9 +47,6 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
     # Only proceed if playing
     if (!is_playing()) return()
     
-    # Read speed to make this observe block depend on it
-    speed <- as.numeric(input$rel_speed)
-    
     years <- year_range()$all
     current_year <- input$rel_year
     current_idx <- which(years == current_year)
@@ -66,10 +63,11 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
       # Reached the end, stop animation
       is_playing(FALSE)
       updateActionButton(session, "rel_play_pause", label = "Play", icon = shiny::icon("play"))
+      return()
     }
     
-    # Re-schedule for next iteration at the specified speed
-    invalidateLater(speed, session)
+    # Re-schedule for next iteration (500ms delay)
+    invalidateLater(500, session)
   })
   
   # Animation status text

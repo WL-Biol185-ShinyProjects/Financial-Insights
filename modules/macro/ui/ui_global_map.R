@@ -17,11 +17,6 @@ global_map_ui <- function() {
           column(4,
             sliderInput("map_year", "Year:", min = 1960, max = 2023, value = 1960, sep = "", animate = FALSE)
           ),
-          column(3,
-            selectInput("map_speed", "Animation Speed:", 
-                       choices = c("Very Slow" = 2000, "Slow" = 1000, "Normal" = 500, "Fast" = 250, "Very Fast" = 100),
-                       selected = 500, width = "100%")
-          ),
           column(2,
             div(style = "margin-top: 25px;",
               actionButton("map_play_pause", "Play", icon = shiny::icon("play"), class = "btn-primary", style = "width: 100%;"),

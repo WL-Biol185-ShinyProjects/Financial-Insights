@@ -88,9 +88,6 @@ global_map_server <- function(input, output, session, macro_data, shared_state) 
     # Only proceed if playing
     if (!is_playing()) return()
     
-    # Read speed to make this observe block depend on it
-    speed <- as.numeric(input$map_speed)
-    
     years <- year_range()$all
     current_year <- input$map_year
     current_idx <- which(years == current_year)
@@ -107,10 +104,11 @@ global_map_server <- function(input, output, session, macro_data, shared_state) 
       # Reached the end, stop animation
       is_playing(FALSE)
       updateActionButton(session, "map_play_pause", label = "Play", icon = shiny::icon("play"))
+      return()
     }
     
-    # Re-schedule for next iteration at the specified speed
-    invalidateLater(speed, session)
+    # Re-schedule for next iteration (500ms delay)
+    invalidateLater(500, session)
   })
   
   # Animation status text
