@@ -60,7 +60,7 @@ credit_ui <- function() {
                    
                    selectInput("Industry", 
                                "Industry:",
-                               choices = c("Select..." = "", "ConsumerDiscretionary", "Consumer Staples", 
+                               choices = c("Select..." = "", "CommunicationServices", "ConsumerDiscretionary", "ConsumerStaples", 
                                            "Education", "Energy", "Financials", "Healthcare", 
                                            "Industrials", "InformationTechnology", "Materials", 
                                            "Real Estate", "Research", "Transport", "Utilities"),
