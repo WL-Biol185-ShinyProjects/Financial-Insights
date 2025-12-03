@@ -32,7 +32,18 @@ relationships_ui <- function() {
                              "Unemployment" = "unemployment", 
                              "Life Expectancy" = "life_expectancy",
                              "Govt Debt" = "govt_debt"),
-                   selected = "inflation")
+                   selected = "inflation"),
+        
+        # Year Animation Controls
+        hr(),
+        h5("Year Animation", style = "margin-top: 10px; margin-bottom: 10px;"),
+        sliderInput("rel_year", "Year:", min = 1960, max = 2023, value = 2023, 
+                   step = 1, sep = "", animate = FALSE),
+        div(style = "display: flex; align-items: center; gap: 10px; margin-top: 10px;",
+          actionButton("rel_play_pause", "Play", icon = shiny::icon("play"), 
+                      class = "btn-primary", style = "flex: 0 0 auto;"),
+          textOutput("rel_animation_status", inline = TRUE)
+        )
       )
     ),
     column(8,

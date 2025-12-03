@@ -4,10 +4,82 @@
 
 relationships_server <- function(input, output, session, macro_data, shared_state) {
   
+  # Animation state
+  is_playing <- reactiveVal(FALSE)
+  
+  # Get year range from data
+  year_range <- reactive({
+    req(macro_data)
+    years <- sort(unique(macro_data$year))
+    list(min = min(years, na.rm = TRUE), max = max(years, na.rm = TRUE), all = years)
+  })
+  
   # Initialize country selector
   observe({
     countries <- unique(macro_data$country) %>% sort()
     updateSelectizeInput(session, "rel_country", choices = countries, selected = "United States", server = TRUE)
+  })
+  
+  # Initialize year slider
+  observe({
+    years <- year_range()$all
+    updateSliderInput(session, "rel_year", min = min(years), max = max(years), 
+                     value = max(years, na.rm = TRUE))
+  })
+  
+  # Play/Pause button handler
+  observeEvent(input$rel_play_pause, {
+    if (is_playing()) {
+      # Pause animation
+      is_playing(FALSE)
+      updateActionButton(session, "rel_play_pause", label = "Play", icon = shiny::icon("play"))
+    } else {
+      # Start animation
+      is_playing(TRUE)
+      updateActionButton(session, "rel_play_pause", label = "Pause", icon = shiny::icon("pause"))
+    }
+  })
+  
+  # Animation timer - updates every 500ms
+  auto_invalidate <- reactiveTimer(500, session)
+  
+  # Animation logic - triggered by timer when playing
+  observe({
+    # Trigger timer (this makes the observe block re-run every 500ms)
+    auto_invalidate()
+    
+    # Only proceed if playing
+    if (!is_playing()) return()
+    
+    years <- year_range()$all
+    current_year <- input$rel_year
+    current_idx <- which(years == current_year)
+    
+    if (length(current_idx) == 0) {
+      current_idx <- 1
+    }
+    
+    # Move to next year
+    if (current_idx < length(years)) {
+      next_year <- years[current_idx + 1]
+      updateSliderInput(session, "rel_year", value = next_year)
+    } else {
+      # Reached the end, stop animation
+      is_playing(FALSE)
+      updateActionButton(session, "rel_play_pause", label = "Play", icon = shiny::icon("play"))
+    }
+  })
+  
+  # Animation status text
+  output$rel_animation_status <- renderText({
+    if (is_playing()) {
+      years <- year_range()$all
+      current_idx <- which(years == input$rel_year)
+      total <- length(years)
+      paste("Playing:", current_idx, "of", total, "years")
+    } else {
+      paste("Year:", input$rel_year)
+    }
   })
   
   # Prevent same indicator for both axes
@@ -43,10 +115,10 @@ relationships_server <- function(input, output, session, macro_data, shared_stat
   
   # Reactive data - Auto-updates on input change
   rel_data <- reactive({
-    req(input$rel_country, input$rel_y1, input$rel_y2)
+    req(input$rel_country, input$rel_y1, input$rel_y2, input$rel_year)
     
     macro_data %>%
-      filter(country == input$rel_country) %>%
+      filter(country == input$rel_country, year <= input$rel_year) %>%
       arrange(year) %>%
       select(year, country, val1 = .data[[input$rel_y1]], val2 = .data[[input$rel_y2]])
   })
