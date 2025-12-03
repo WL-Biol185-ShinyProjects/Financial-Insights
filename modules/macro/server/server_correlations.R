@@ -40,15 +40,13 @@ correlations_server <- function(input, output, session, macro_data, shared_state
     }
   })
   
-  # Animation speed (milliseconds between updates)
-  animation_speed <- reactive({
-    as.numeric(input$corr_speed)
-  })
-  
   # Animation logic - triggered by timer when playing
   observe({
     # Only proceed if playing
     if (!is_playing()) return()
+    
+    # Read speed to make this observe block depend on it
+    speed <- as.numeric(input$corr_speed)
     
     years <- year_range()$all
     current_year <- input$corr_year
@@ -69,7 +67,7 @@ correlations_server <- function(input, output, session, macro_data, shared_state
     }
     
     # Re-schedule for next iteration at the specified speed
-    invalidateLater(animation_speed(), session)
+    invalidateLater(speed, session)
   })
   
   # Animation status text
