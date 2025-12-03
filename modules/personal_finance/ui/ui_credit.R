@@ -167,9 +167,6 @@ credit_ui <- function() {
                  ),
                  tags$div(
                    class = "card-body",
-                   tags$h6("Random Forest Model Performance"),
-                   verbatimTextOutput("model_summary"),
-                   tags$hr(),
                    tags$h6("Feature Importance"),
                    plotOutput("importance_plot", height = "400px"),
                    tags$p(class = "text-muted", "This chart shows which features have the most impact on approval decisions.")
