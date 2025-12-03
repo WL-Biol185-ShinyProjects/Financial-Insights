@@ -81,16 +81,18 @@ global_map_server <- function(input, output, session, macro_data, shared_state) 
     }
   })
   
-  # Animation timer - updates every 500ms
-  auto_invalidate <- reactiveTimer(500, session)
+  # Animation speed (milliseconds between updates)
+  animation_speed <- reactive({
+    as.numeric(input$map_speed)
+  })
   
   # Animation logic - triggered by timer when playing
   observe({
-    # Trigger timer (this makes the observe block re-run every 500ms)
-    auto_invalidate()
-    
     # Only proceed if playing
     if (!is_playing()) return()
+    
+    # Invalidate after the specified delay
+    invalidateLater(animation_speed(), session)
     
     years <- year_range()$all
     current_year <- input$map_year
